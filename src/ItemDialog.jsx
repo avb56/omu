@@ -12,7 +12,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import TextField from '@mui/material/TextField';
 
-export default function ItemDialog({ bItemDialogOpen, setItemDialogOpen, oItemDialogOptions, fDataEditor }) {
+export default function ItemDialog({
+  bItemDialogOpen, setItemDialogOpen, oItemDialogOptions, aTreeData, setTreeData
+}) {
   const { node, id } = oItemDialogOptions;
   const [bEditMode, setEditMode] = React.useState(false);
   // const [sTitle, setTitle] = React.useState(node.name);
@@ -21,8 +23,10 @@ export default function ItemDialog({ bItemDialogOpen, setItemDialogOpen, oItemDi
   function handleClose(ev) {
     if (bEditMode) {
       const oFormData = new FormData(ev.target.closest('button').form);
-      if (node.title != oFormData.get('title') || node.description != oFormData.get('description'))
+      const descriptionFix = oFormData.get('description') || undefined; // null != undefined
+      if (node.title != oFormData.get('title') || node.description != descriptionFix)
         if (!confirm('Имеются несохранённые данные. Закрыть без сохранения?')) return;
+        // console.log('1:'+node.description, '2:'+descriptionFix);
       setEditMode(false);
     }
     setItemDialogOpen(false);
@@ -31,22 +35,28 @@ export default function ItemDialog({ bItemDialogOpen, setItemDialogOpen, oItemDi
   function handleEdit(ev) {
     if (!bEditMode) return setEditMode(true);
     const oFormData = new FormData(ev.target.closest('button').form);
-    fDataEditor({ id, title: oFormData.get('title'), description: oFormData.get('description') });
-    // console.log(...oFormData.values());
+    const aNewData = [ ...aTreeData ];
+    const oNode = id.reduce((node, index) => node.children[index], { children: aNewData });
+    oNode.title = oFormData.get('title');
+    oNode.description = oFormData.get('description') || undefined;
+    setTreeData(aNewData);
     setEditMode(false);
+    // console.log(...oFormData.values());
   }
 
-  // React.useEffect(() => {
-  //   setTitle(node.name);
-  //   setDescription(node.description);
-  // });
+  React.useEffect(() => {
+    if (bItemDialogOpen == 'Edit') {
+      setItemDialogOpen(true);
+      setEditMode(true);
+    }
+  });
 
   return (
     <Dialog
       fullScreen
       onClose={handleClose}
       aria-labelledby="customized-dialog-title"
-      open={bItemDialogOpen}
+      open={!!bItemDialogOpen}
       PaperComponent={'form'}
       sx={{ '& .MuiDialog-paper': { backgroundColor: 'white' } }}
     >

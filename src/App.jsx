@@ -4,7 +4,7 @@ import TextIncreaseIcon from '@mui/icons-material/TextIncrease';
 import TextDecreaseIcon from '@mui/icons-material/TextDecrease';
 import { useState } from 'react';
 //import './App.css'
-import RichObjectTreeView from './RichObjectTreeView';
+import MainTreeView from './MainTreeView';
 import ItemDialog from './ItemDialog';
 import { createTheme, responsiveFontSizes, ThemeProvider } from '@mui/material/styles';
 //import Grid from '@mui/material/Grid'; // Grid version 1
@@ -24,7 +24,7 @@ export default function App() {
     return (
       <ThemeProvider theme={theme}>
         <CaptionMain setFontSize={setFontSize} />
-        <RichObjectTreeView />
+        <MainTreeView />
       </ThemeProvider>
     )
   }
