@@ -30,6 +30,11 @@ export default function ItemMenu(props) {
     handleClose();
   };
 
+  const handleAddItem = () => {
+    setItemDialogOpen('Add');
+    handleClose();
+  };
+
   return <Menu
     anchorEl={anchorEl}
     open={Boolean(anchorEl)}
@@ -48,7 +53,7 @@ export default function ItemMenu(props) {
       <ListItemText>Править</ListItemText>
     </MenuItem>
     <Divider/>
-    <MenuItem>
+    <MenuItem onClick={handleAddItem}>
       <ListItemIcon>
         <PostAddIcon fontSize="small" />
       </ListItemIcon>

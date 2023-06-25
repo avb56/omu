@@ -36,27 +36,28 @@ const data = [
 ];
 
 export default function MainTreeView() {
-  const [bItemDialogOpen, setItemDialogOpen] = React.useState(false);
-  const [oItemDialogOptions, setItemDialogOptions] = React.useState({ node: {} });
+  const [itemDialogOpen, setItemDialogOpen] = React.useState(false);
+  const [oItemOptions, setItemOptions] = React.useState({ node: {} });
   const [aTreeData, setTreeData] = React.useState(data);
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [aExpanded, setExpanded] = React.useState([]);
   const [sSelected, setSelected] = React.useState(null);
 
   return <ItemDialogContext.Provider value={{
-    setItemDialogOpen, setItemDialogOptions, setAnchorEl, setSelected
+    setItemDialogOpen, setItemOptions, setAnchorEl, setSelected
   }}>
     <TreeView
-      aria-label="rich object"
       defaultCollapseIcon={<ExpandMoreIcon />}
-      defaultExpanded={['root']}
       defaultExpandIcon={<ChevronRightIcon />}
+      expanded={aExpanded}
       selected={sSelected}
+      onNodeToggle={(ev, sNodeIds) => setExpanded(sNodeIds)}
       onNodeSelect={(ev, sNodeId) => setSelected(sNodeId)}
     >
       {aTreeData.map((node, i) => renderTree(node, [i]))}
     </TreeView>
     <ItemDialog { ...{
-      bItemDialogOpen, setItemDialogOpen, oItemDialogOptions, aTreeData, setTreeData
+      itemDialogOpen, setItemDialogOpen, oItemOptions, setItemOptions, aTreeData, setTreeData, setExpanded, setSelected
     }} />
     <ItemMenu { ...{
       anchorEl, setAnchorEl, setItemDialogOpen
@@ -78,18 +79,18 @@ const renderTree = (nodes, id) => (
 
 function LabelRow(props) {
   const handleRowClick = ev => console.log(ev.detail == 2);
-  const { setItemDialogOpen, setItemDialogOptions, setAnchorEl, setSelected } = React.useContext(ItemDialogContext);
+  const { setItemDialogOpen, setItemOptions, setAnchorEl, setSelected } = React.useContext(ItemDialogContext);
 
   function fItemMenuOpen(ev) {
     ev.stopPropagation();
-    setItemDialogOptions(props);
+    setItemOptions(props);
     setAnchorEl(ev.currentTarget);
     setSelected(props.id.join('/'));
     // console.log(props.id.join('/'));
   }
 
   function fItemDialogOpen() {
-    setItemDialogOptions(props);
+    setItemOptions(props);
     setItemDialogOpen(true);
     // console.log(props.id.join('/'));
   }
