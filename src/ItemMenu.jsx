@@ -14,11 +14,10 @@ import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
 import ArrowCircleDownIcon from '@mui/icons-material/ArrowCircleDown';
 
 export default function ItemMenu(props) {
-  const { anchorEl, setAnchorEl, setItemDialogOpen } = props;
+  const { anchorEl, setAnchorEl, setItemDialogOpen, oItemOptions, aTreeData, setTreeData } = props;
   const ListItemIcon = props => <ListItemIconInit { ...props } sx={{ mr: 2 }} />;
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const [oItemBuffer, setItemBuffer] = React.useState();
+  const handleClose = () => setAnchorEl(null);
 
   const handleOpenItem = () => {
     setItemDialogOpen(true);
@@ -32,6 +31,17 @@ export default function ItemMenu(props) {
 
   const handleAddItem = () => {
     setItemDialogOpen('Add');
+    handleClose();
+  };
+  
+  const handleCutItem = () => {
+    const aIds = [ ...oItemOptions.id ];
+    const nCurrentIndex = aIds.pop();
+    const aNewData = [ ...aTreeData ];
+    const oParentNode = aIds.reduce((node, index) => node.children[index], { children: aNewData });
+    setItemBuffer(oParentNode.children.splice(nCurrentIndex, 1));
+    setTreeData(aNewData);
+    // console.log(aIds, nCurrentIndex)
     handleClose();
   };
 
@@ -52,13 +62,13 @@ export default function ItemMenu(props) {
       </ListItemIcon>
       <ListItemText>Править</ListItemText>
     </MenuItem>
-    <Divider/>
     <MenuItem onClick={handleAddItem}>
       <ListItemIcon>
         <PostAddIcon fontSize="small" />
       </ListItemIcon>
       <ListItemText>Добавить</ListItemText>
     </MenuItem>
+    <Divider/>
     <MenuItem>
       <ListItemIcon>
         <ArrowCircleUpIcon fontSize="small" />
@@ -72,7 +82,7 @@ export default function ItemMenu(props) {
       <ListItemText>Вниз</ListItemText>
     </MenuItem>
     <Divider/>
-    <MenuItem>
+    <MenuItem onClick={handleCutItem}>
       <ListItemIcon>
         <ContentCut fontSize="small" />
       </ListItemIcon>
@@ -84,7 +94,7 @@ export default function ItemMenu(props) {
       </ListItemIcon>
       <ListItemText>Копировать</ListItemText>
     </MenuItem>
-    <MenuItem>
+    <MenuItem disabled={!oItemBuffer}>
       <ListItemIcon>
         <ContentPaste fontSize="small" />
       </ListItemIcon>
