@@ -43,6 +43,15 @@ export default function MainTreeView() {
   const [aExpanded, setExpanded] = React.useState([]);
   const [sSelected, setSelected] = React.useState(null);
 
+  React.useEffect(() => {
+    document.getElementById('root').onclick = ev => {
+      if (!ev.target.closest('button#ItemAddRoot')) return;
+      setItemOptions({ node: {}, id: [] });
+      setItemDialogOpen('Add');
+      // console.log('test');
+    }
+  });
+
   return <ItemDialogContext.Provider value={{
     setItemDialogOpen, setItemOptions, setAnchorEl, setSelected
   }}>

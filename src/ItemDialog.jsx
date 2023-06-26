@@ -40,6 +40,7 @@ export default function ItemDialog({
     let oNode = id.reduce((node, index) => node.children[index], { children: aNewData });
     let newId;
     if (editMode == 'Add') {
+      if (!oFormData.get('title')) return alert('Заголовок обязателен');
       if (!oNode.children) oNode.children = [];
       oNode.children.push({});
       const addIndex = oNode.children.length - 1;
