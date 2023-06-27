@@ -23,9 +23,8 @@ function deepClone(src, destination) {
 }
 
 export default function ItemMenu(props) {
-  const { anchorEl, setAnchorEl, setItemDialogOpen, oItemOptions, aTreeData, setTreeData, setExpanded } = props;
+  const { anchorEl, setAnchorEl, setItemDialogOpen, oItemOptions, aTreeData, setTreeData, setExpanded, oItemBuffer, setItemBuffer } = props;
   const ListItemIcon = props => <ListItemIconInit { ...props } sx={{ mr: 2 }} />;
-  const [oItemBuffer, setItemBuffer] = React.useState();
   const handleClose = () => setAnchorEl(null);
 
   const handleOpenItem = () => {
@@ -54,14 +53,10 @@ export default function ItemMenu(props) {
     handleClose();
   };
 
-  const handlePasteItemOff = () => {
-    const aNewData = [ ...aTreeData ];
-    const oNode = oItemOptions.id.reduce((node, index) => node.children[index], { children: aNewData });
-    if (!oNode.children) oNode.children = [];
-    oNode.children.push(deepItemClone(oItemBuffer));
-    setTreeData(aNewData);
+  const handleCopyItem = () => {
+    setItemBuffer(oItemOptions.node);
     handleClose();
-    // console.log(JSON.stringify(oNode, null, 2))
+    // console.log(JSON.stringify(oItemOptions.node, null, 2))
   };
 
   const handlePasteItem = () => {
@@ -117,7 +112,7 @@ export default function ItemMenu(props) {
       </ListItemIcon>
       <ListItemText>Вырезать</ListItemText>
     </MenuItem>
-    <MenuItem>
+    <MenuItem onClick={handleCopyItem}>
       <ListItemIcon>
         <ContentCopy fontSize="small" />
       </ListItemIcon>

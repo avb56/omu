@@ -42,10 +42,16 @@ export default function MainTreeView() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [aExpanded, setExpanded] = React.useState([]);
   const [sSelected, setSelected] = React.useState(null);
+  const [oItemBuffer, setItemBuffer] = React.useState();
 
   React.useEffect(() => {
     document.getElementById('root').onclick = ev => {
       if (!ev.target.closest('button#ItemAddRoot')) return;
+      if (oItemBuffer && confirm('Вставить из буфера?')) {
+        setTreeData(aPrevData => [ ...aPrevData, oItemBuffer ]);
+        setSelected(String(aTreeData.length));
+        return;
+      }
       setItemOptions({ node: {}, id: [] });
       setItemDialogOpen('Add');
       // console.log('test');
@@ -69,7 +75,7 @@ export default function MainTreeView() {
       itemDialogOpen, setItemDialogOpen, oItemOptions, setItemOptions, aTreeData, setTreeData, setExpanded, setSelected
     }} />
     <ItemMenu { ...{
-      anchorEl, setAnchorEl, setItemDialogOpen, oItemOptions, aTreeData, setTreeData, setExpanded
+      anchorEl, setAnchorEl, setItemDialogOpen, oItemOptions, aTreeData, setTreeData, setExpanded, oItemBuffer, setItemBuffer
     }} />
   </ItemDialogContext.Provider>
 }
