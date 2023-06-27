@@ -69,7 +69,7 @@ export default function MainTreeView() {
       itemDialogOpen, setItemDialogOpen, oItemOptions, setItemOptions, aTreeData, setTreeData, setExpanded, setSelected
     }} />
     <ItemMenu { ...{
-      anchorEl, setAnchorEl, setItemDialogOpen, oItemOptions, aTreeData, setTreeData
+      anchorEl, setAnchorEl, setItemDialogOpen, oItemOptions, aTreeData, setTreeData, setExpanded
     }} />
   </ItemDialogContext.Provider>
 }
