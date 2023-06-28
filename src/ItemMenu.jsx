@@ -23,48 +23,44 @@ function deepClone(src, destination) {
 }
 
 export default function ItemMenu(props) {
-  const { anchorEl, setAnchorEl, setItemDialogOpen, oItemOptions, aTreeData, setTreeData, setExpanded, oItemBuffer, setItemBuffer } = props;
+  const { anchorEl, handleClose, setItemDialogOpen, oItemOptions, aTreeData, setTreeData, setExpanded, oItemBuffer, setItemBuffer, setSelected, setItemOptions } = props;
   const ListItemIcon = props => <ListItemIconInit { ...props } sx={{ mr: 2 }} />;
-  const handleClose = () => setAnchorEl(null);
 
-  const handleOpenItem = () => {
-    setItemDialogOpen(true);
+  const handleMenuItem = sType => {
+    sType == 'Copy' ? setItemBuffer(oItemOptions.oNode) : setItemDialogOpen(sType);
     handleClose();
   };
+  // console.log(JSON.stringify(oItemOptions.oNode, null, 2))
 
-  const handleEditItem = () => {
-    setItemDialogOpen('Edit');
-    handleClose();
-  };
-
-  const handleAddItem = () => {
-    setItemDialogOpen('Add');
-    handleClose();
-  };
-  
-  const handleCutItem = () => {
-    const aIds = [ ...oItemOptions.id ];
-    const nCurrentIndex = aIds.pop();
+  const handleMoveItem = nSteep => {
+    const aIdClone = [ ...oItemOptions.aId ];
+    const nCurrentIndex = aIdClone.pop();
     const aNewData = [ ...aTreeData ];
-    const oParentNode = aIds.reduce((node, index) => node.children[index], { children: aNewData });
-    setItemBuffer(oParentNode.children.splice(nCurrentIndex, 1)[0]);
+    const oParentNode = aIdClone.reduce((oSubNode, nIndex) => oSubNode.children[nIndex], { children: aNewData });
+    let nNewIndex = nCurrentIndex + nSteep;
+    if (nNewIndex < 0) nNewIndex += oParentNode.children.length;
+    if (nNewIndex == oParentNode.children.length) nNewIndex = 0;
+    const aNewId = aIdClone.concat(nNewIndex);
+    const oMovedNode = oParentNode.children.splice(nCurrentIndex, 1)[0];
+    if (nSteep) {
+      oParentNode.children.splice(nNewIndex, 0, oMovedNode);
+      setSelected(aNewId.join('/'));
+      setItemOptions(oPrev => ({ ...oPrev, aId: aNewId }));
+      // setItemOptions({ oNode: oMovedNode, aId: aNewId });
+      // console.log(oMovedNode == oItemOptions.oNode)
+    } else {
+      setItemBuffer(oMovedNode);
+      handleClose();
+    }
     setTreeData(aNewData);
-    // console.log(aIds, nCurrentIndex)
-    handleClose();
-  };
-
-  const handleCopyItem = () => {
-    setItemBuffer(oItemOptions.node);
-    handleClose();
-    // console.log(JSON.stringify(oItemOptions.node, null, 2))
   };
 
   const handlePasteItem = () => {
-    const oNode = oItemOptions.node;
+    const oNode = oItemOptions.oNode;
     if (!oNode.children) oNode.children = [];
     oNode.children.push(deepClone(oItemBuffer));
     setTreeData(aPrevData => [ ...aPrevData ]);
-    setExpanded(prev => prev.concat(oItemOptions.id.join('/')));
+    setExpanded(aPrev => aPrev.concat(oItemOptions.aId.join('/')));
     handleClose();
     // console.log(JSON.stringify(oItemBuffer, null, 2))
   };
@@ -74,45 +70,45 @@ export default function ItemMenu(props) {
     open={Boolean(anchorEl)}
     onClose={handleClose}
   >
-    <MenuItem onClick={handleOpenItem}>
+    <MenuItem onClick={ev => handleMenuItem('Open')}>
       <ListItemIcon>
         <ListAltIcon fontSize="small" />
       </ListItemIcon>
       <ListItemText>Открыть</ListItemText>
     </MenuItem>
-    <MenuItem onClick={handleEditItem}>
+    <MenuItem onClick={ev => handleMenuItem('Edit')}>
       <ListItemIcon>
         <EditIcon fontSize="small" />
       </ListItemIcon>
       <ListItemText>Править</ListItemText>
     </MenuItem>
-    <MenuItem onClick={handleAddItem}>
+    <MenuItem onClick={ev => handleMenuItem('Add')}>
       <ListItemIcon>
         <PostAddIcon fontSize="small" />
       </ListItemIcon>
       <ListItemText>Добавить</ListItemText>
     </MenuItem>
     <Divider/>
-    <MenuItem>
+    <MenuItem onClick={ev => handleMoveItem(-1)}>
       <ListItemIcon>
         <ArrowCircleUpIcon fontSize="small" />
       </ListItemIcon>
       <ListItemText>Вверх</ListItemText>
     </MenuItem>
-    <MenuItem>
+    <MenuItem onClick={ev => handleMoveItem(1)}>
       <ListItemIcon>
         <ArrowCircleDownIcon fontSize="small" />
       </ListItemIcon>
       <ListItemText>Вниз</ListItemText>
     </MenuItem>
     <Divider/>
-    <MenuItem onClick={handleCutItem}>
+    <MenuItem onClick={ev => handleMoveItem(0)}>
       <ListItemIcon>
         <ContentCut fontSize="small" />
       </ListItemIcon>
       <ListItemText>Вырезать</ListItemText>
     </MenuItem>
-    <MenuItem onClick={handleCopyItem}>
+    <MenuItem onClick={ev => handleMenuItem('Copy')}>
       <ListItemIcon>
         <ContentCopy fontSize="small" />
       </ListItemIcon>

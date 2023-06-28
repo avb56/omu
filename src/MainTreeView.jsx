@@ -37,12 +37,13 @@ const data = [
 
 export default function MainTreeView() {
   const [itemDialogOpen, setItemDialogOpen] = React.useState(false);
-  const [oItemOptions, setItemOptions] = React.useState({ node: {} });
+  const [oItemOptions, setItemOptions] = React.useState({ oNode: {} });
   const [aTreeData, setTreeData] = React.useState(data);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [aExpanded, setExpanded] = React.useState([]);
   const [sSelected, setSelected] = React.useState(null);
   const [oItemBuffer, setItemBuffer] = React.useState();
+  const handleClose = () => setAnchorEl(null);
 
   React.useEffect(() => {
     document.getElementById('root').onclick = ev => {
@@ -52,7 +53,7 @@ export default function MainTreeView() {
         setSelected(String(aTreeData.length));
         return;
       }
-      setItemOptions({ node: {}, id: [] });
+      setItemOptions({ oNode: {}, aId: [] });
       setItemDialogOpen('Add');
       // console.log('test');
     }
@@ -66,28 +67,28 @@ export default function MainTreeView() {
       defaultExpandIcon={<ChevronRightIcon />}
       expanded={aExpanded}
       selected={sSelected}
-      onNodeToggle={(ev, sNodeIds) => setExpanded(sNodeIds)}
+      onNodeToggle={(ev, aNodeIds) => setExpanded(aNodeIds)}
       onNodeSelect={(ev, sNodeId) => setSelected(sNodeId)}
     >
-      {aTreeData.map((node, i) => renderTree(node, [i]))}
+      {aTreeData.map((oNode, nIndex) => renderTree(oNode, [nIndex]))}
     </TreeView>
     <ItemDialog { ...{
       itemDialogOpen, setItemDialogOpen, oItemOptions, setItemOptions, aTreeData, setTreeData, setExpanded, setSelected
     }} />
     <ItemMenu { ...{
-      anchorEl, setAnchorEl, setItemDialogOpen, oItemOptions, aTreeData, setTreeData, setExpanded, oItemBuffer, setItemBuffer
+      anchorEl, handleClose, setItemDialogOpen, oItemOptions, aTreeData, setTreeData, setExpanded, oItemBuffer, setItemBuffer, setSelected, setItemOptions
     }} />
   </ItemDialogContext.Provider>
 }
 
-const renderTree = (nodes, id) => (
+const renderTree = (oNode, aId) => (
   <TreeItem
-    key={id.join('/')} nodeId={id.join('/')}
+    key={aId.join('/')} nodeId={aId.join('/')}
     sx={{ '& .MuiTreeItem-content': { p: 0 } }}
-    label={<LabelRow id={id} node={nodes} />}
+    label={<LabelRow aId={aId} oNode={oNode} />}
   >
-    {Array.isArray(nodes.children)
-    ? nodes.children.map((node, i) => renderTree(node, id.concat(i)))
+    {Array.isArray(oNode.children)
+    ? oNode.children.map((oSubNode, nIndex) => renderTree(oSubNode, aId.concat(nIndex)))
     : null}
   </TreeItem>
 );
@@ -100,14 +101,14 @@ function LabelRow(props) {
     ev.stopPropagation();
     setItemOptions(props);
     setAnchorEl(ev.currentTarget);
-    setSelected(props.id.join('/'));
-    // console.log(props.id.join('/'));
+    setSelected(props.aId.join('/'));
+    // console.log(ev.currentTarget);
   }
 
   function fItemDialogOpen() {
     setItemOptions(props);
     setItemDialogOpen(true);
-    // console.log(props.id.join('/'));
+    // console.log(props.aId.join('/'));
   }
 
   return <Grid
@@ -116,7 +117,7 @@ function LabelRow(props) {
   > 
     <Grid xs
       onClick={ev => ev.detail == 2 && fItemDialogOpen()}
-    >{props.node.title}</Grid>
+    >{props.oNode.title}</Grid>
     <Grid xs="auto">
       <IconButton
         aria-label="-"

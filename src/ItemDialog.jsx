@@ -15,10 +15,10 @@ import TextField from '@mui/material/TextField';
 export default function ItemDialog({
   itemDialogOpen, setItemDialogOpen, oItemOptions, setItemOptions, aTreeData, setTreeData, setExpanded, setSelected
 }) {
-  const { node, id } = oItemOptions;
+  const { oNode, aId } = oItemOptions;
   const [editMode, setEditMode] = React.useState(false);
-  const sTitle = editMode == 'Add' ? '' : node.title;
-  const sDescription = editMode == 'Add' ? undefined : node.description;
+  const sTitle = editMode == 'Add' ? '' : oNode.title;
+  const sDescription = editMode == 'Add' ? undefined : oNode.description;
   // const [sDescription, setDescription] = React.useState();
 
   function handleClose(ev) {
@@ -37,23 +37,23 @@ export default function ItemDialog({
     if (!editMode) return setEditMode(true);
     const oFormData = new FormData(ev.target.closest('button').form);
     const aNewData = [ ...aTreeData ];
-    let oNode = id.reduce((node, index) => node.children[index], { children: aNewData });
+    let oItemNode = aId.reduce((oSubNode, nIndex) => oSubNode.children[nIndex], { children: aNewData });
     let newId;
     if (editMode == 'Add') {
       if (!oFormData.get('title')) return alert('Заголовок обязателен');
-      if (!oNode.children) oNode.children = [];
-      oNode.children.push({});
-      const addIndex = oNode.children.length - 1;
-      newId = id.concat(addIndex);
-      oNode = oNode.children[addIndex];
-      setItemOptions({ node: oNode, id: newId });
+      if (!oItemNode.children) oItemNode.children = [];
+      oItemNode.children.push({});
+      const addIndex = oItemNode.children.length - 1;
+      newId = aId.concat(addIndex);
+      oItemNode = oItemNode.children[addIndex];
+      setItemOptions({ oNode: oItemNode, aId: newId });
     }
-    oNode.title = oFormData.get('title');
-    oNode.description = oFormData.get('description') || undefined;
+    oItemNode.title = oFormData.get('title');
+    oItemNode.description = oFormData.get('description') || undefined;
     setTreeData(aNewData);
     setEditMode(false);
     if (newId) {
-      setExpanded(prev => prev.concat(id.join('/')));
+      setExpanded(prev => prev.concat(aId.join('/')));
       setSelected(newId.join('/'));
     }
     // console.log(...oFormData.values());
@@ -86,7 +86,7 @@ export default function ItemDialog({
                 label="Заголовок" variant="outlined" fullWidth name='title'
                 defaultValue={sTitle} autoFocus={editMode == 'Add'}
               />
-            : <Typography variant="h5">{node.title}</Typography>
+            : <Typography variant="h5">{oNode.title}</Typography>
           }</Grid>
           <Grid xs="auto">
             <IconButton
@@ -112,7 +112,7 @@ export default function ItemDialog({
         ? <TextField label="Описание" name='description' variant="outlined" fullWidth multiline
             defaultValue={sDescription}
           />
-        : <Typography component="pre" gutterBottom>{node.description}</Typography>
+        : <Typography component="pre" gutterBottom>{oNode.description}</Typography>
       }</DialogContent>
     </Dialog>
   );
