@@ -55,9 +55,17 @@ export default function MainTreeView() {
       }
       setItemOptions({ oNode: {}, aId: [] });
       setItemDialogOpen('Add');
-      // console.log('test');
     }
-  });
+    // console.log('test[oItemBuffer]');
+  }, [oItemBuffer]);
+
+  // React.useEffect(() => {
+  //   console.log('test[aTreeData]');
+  // }, [aTreeData]);
+
+  // React.useEffect(() => {
+  //   console.log('test[]');
+  // }, []);
 
   return <ItemDialogContext.Provider value={{
     setItemDialogOpen, setItemOptions, setAnchorEl, setSelected
